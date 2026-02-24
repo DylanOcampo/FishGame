@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 0dcb07f0fee5c40559cc8236d5e6e3c7
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 346638
+  packageName: Interactive Pixel Water
+  packageVersion: 1.0.0
+  assetPath: Assets/Cainos/Third Party/Lucid Editor/Editor/LucidEditorGUILayout.cs
+  uploadId: 848204
