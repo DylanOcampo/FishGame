@@ -22,7 +22,7 @@ public class MinigameManager : MonoBehaviour
             return _instance;
         }
     }
-    
+
 
 
     public int progress;
@@ -35,7 +35,7 @@ public class MinigameManager : MonoBehaviour
     public List<GameObject> currentTargets = new List<GameObject>();
     public List<float> targetPositions = new List<float>();
 
-    public GameObject cursor, cursorTargetContainer, cursorTargetPrefab;
+    public GameObject cursor, cursorTargetContainer, playArea;
 
     public System.Action onTriggerTargetArgs;
 
@@ -47,57 +47,64 @@ public class MinigameManager : MonoBehaviour
 
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(!colliderEnabled)
+        if (!colliderEnabled)
         {
             if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0))
             {
                 StartCoroutine(CheckForCollisions());
             }
         }
-    
-    
+
+
     }
 
     IEnumerator CheckForCollisions()
     {
         colliderEnabled = true;
-        if(currentTargets.Count > 0)
+        bool flag = true;
+        if (currentTargets.Count > 0)
         {
-            foreach(GameObject target in currentTargets)
+            foreach (GameObject target in currentTargets)
             {
                 float targetZ = target.transform.localRotation.eulerAngles.z;
-                if(currentMiniGame == "CounterClock")
+                if (currentMiniGame == "CounterClock")
                 {
                     targetZ += cursorTargetContainer.transform.localRotation.eulerAngles.z;
                 }
-                while(targetZ > 344)
+                while (targetZ > 344)
                 {
                     targetZ -= 360;
                 }
 
                 float cursorZ = cursor.transform.localRotation.eulerAngles.z;
                 Debug.Log(targetZ + " " + cursorZ);
-                if(Mathf.Abs(targetZ - cursorZ) < targetRangeTrigger)
+                if (Mathf.Abs(targetZ - cursorZ) < targetRangeTrigger)
                 {
                     OnTriggerTarget(target);
+                    flag = false;
                     break;
                 }
             }
+        }
+        if (flag)
+        {
+            MissedTarget();
         }
         Debug.Log("Checked for collisions");
         colliderEnabled = false;
         yield return new WaitForSeconds(0.01f);
 
-        
+
     }
 
-    private void InitializeMiniGame(){
+    private void InitializeMiniGame()
+    {
         progress = 0;
         progressBar.fillAmount = 0;
         currentTargets.Clear();
@@ -106,14 +113,14 @@ public class MinigameManager : MonoBehaviour
         cursorTargetContainer.transform.localRotation = Quaternion.Euler(0, 0, 0);
         DOTween.KillAll();
         currentDirection = false;
-        if(numberOfTargets > 7)
+        if (numberOfTargets > 7)
         {
             numberOfTargets = 7;
         }
 
         cursor.transform.localRotation = Quaternion.Euler(0, 0, 0);
         cursor.transform.DORotate(new Vector3(0, 0, -360), velocity, RotateMode.FastBeyond360).SetLoops(-1).SetEase(Ease.Linear);
-        for(int i = 0; i < numberOfTargets; i++)
+        for (int i = 0; i < numberOfTargets; i++)
         {
             SpawnTarget();
         }
@@ -145,37 +152,53 @@ public class MinigameManager : MonoBehaviour
         currentMiniGame = "CounterClock";
     }
 
+    private void MissedTarget()
+    {
+        progress--;
+        if (progress < 0)
+        {
+            progress = 0;
+        }
+        progressBar.fillAmount = (float)progress / progressTarget;
+        playArea.transform.DOShakePosition(0.5f, 10, 20, 90, false, true);
+        progressBar.transform.DOShakePosition(0.5f, 10, 20, 90, false, true);
+    }
+
+    private void bounceTrigger()
+    {
+        float angleHelper = 360;
+        if (currentDirection)
+        {
+            currentDirection = false;
+        }
+        else
+        {
+            angleHelper *= -1;
+            currentDirection = true;
+        }
+        cursor.transform.DOKill();
+        cursor.transform.DORotate(new Vector3(0, 0, cursor.transform.localRotation.eulerAngles.z - angleHelper), velocity, RotateMode.FastBeyond360).SetLoops(-1).SetEase(Ease.Linear);
+
+    }
+
     public void OnTriggerTarget(GameObject self)
     {
-        if(currentMiniGame == "Bounce")
+        if (currentMiniGame == "Bounce")
         {
-            float angleHelper = 360;
-            if(currentDirection)
-            {
-                currentDirection = false;
-            }
-            else
-            {
-                angleHelper *= -1;
-                currentDirection = true;
-            }
-            cursor.transform.DOKill();
-            cursor.transform.DORotate(new Vector3(0, 0, cursor.transform.localRotation.eulerAngles.z - angleHelper), velocity, RotateMode.FastBeyond360).SetLoops(-1).SetEase(Ease.Linear);
+            bounceTrigger();
         }
 
-        if(currentTargets.Count > 0)
+        if (currentTargets.Count > 0)
         {
-            
-            
             progress++;
             progressBar.fillAmount = (float)progress / progressTarget;
-            if(progress >= progressTarget)
+            if (progress >= progressTarget)
             {
-                if(onTriggerTargetArgs != null)
+                if (onTriggerTargetArgs != null)
                 {
-                    foreach(GameObject target in currentTargets)
+                    foreach (GameObject target in currentTargets)
                     {
-                        Destroy(target);
+                        PoolManager.instance.ReturnToPool(target);
                     }
                     currentTargets.Clear();
                     targetPositions.Clear();
@@ -189,34 +212,35 @@ public class MinigameManager : MonoBehaviour
                 currentTargets.Remove(self);
                 targetPositions.Remove(self.transform.localRotation.eulerAngles.z);
             }
-            Destroy(self);
+            PoolManager.instance.ReturnToPool(self);
         }
-        
+
     }
+    
 
     void SpawnTarget()
     {
-        GameObject target = Instantiate(cursorTargetPrefab, cursorTargetContainer.transform);
-        
-        while(true)
+        GameObject target = PoolManager.instance.GetPooledObject();
+
+        while (true)
         {
             float randomZ = Random.Range(0, 360);
             float randomZHelper = randomZ;
             bool flag = true;
-            if(randomZHelper > 344)
+            if (randomZHelper > 344)
             {
                 randomZHelper -= 360;
             }
 
-            foreach(float targetZ in targetPositions)
+            foreach (float targetZ in targetPositions)
             {
-               if(Mathf.Abs(targetZ - randomZHelper) < 45)
+                if (Mathf.Abs(targetZ - randomZHelper) < 45)
                 {
                     flag = false;
                     break;
                 }
             }
-            if(flag)
+            if (flag)
             {
                 target.transform.localRotation = Quaternion.Euler(0, 0, randomZ);
                 currentTargets.Add(target);
@@ -225,7 +249,7 @@ public class MinigameManager : MonoBehaviour
             }
         }
 
-        
+
     }
 
 
