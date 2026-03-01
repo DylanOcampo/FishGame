@@ -221,7 +221,12 @@ public class MinigameManager : MonoBehaviour
     void SpawnTarget()
     {
         GameObject target = PoolManager.instance.GetPooledObject();
+        target.SetActive(true);
+        Debug.Log("Spawned target");
+        target.transform.SetParent(cursorTargetContainer.transform);
 
+        target.GetComponent<RectTransform>().localPosition = new Vector3(0, 0, 0);
+        target.transform.localScale = Vector3.one;
         while (true)
         {
             float randomZ = Random.Range(0, 360);

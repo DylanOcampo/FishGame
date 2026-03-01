@@ -1,0 +1,76 @@
+{
+    "fish": [
+        {
+            "name": "Sardine",
+            "rarity": "Common",
+            "probability": 9,
+            "spritePath": "Fish/Sprites/Sardine"
+        },
+        {
+            "name": "Tilapia",
+            "rarity": "Common",
+            "probability": 8,
+            "spritePath": "Fish/Sprites/Tilapia"
+        },
+        {
+            "name": "Carp",
+            "rarity": "Common",
+            "probability": 7,
+            "spritePath": "Fish/Sprites/Carp"
+        },
+        {
+            "name": "Trout",
+            "rarity": "Common",
+            "probability": 6,
+            "spritePath": "Fish/Sprites/Trout"
+        },
+        {
+            "name": "Catfish",
+            "rarity": "Common",
+            "probability": 8,
+            "spritePath": "Fish/Sprites/Catfish"
+        },
+        {
+            "name": "Clownfish",
+            "rarity": "Uncommon",
+            "probability": 7,
+            "spritePath": "Fish/Sprites/Clownfish"
+        },
+        {
+            "name": "Salmon",
+            "rarity": "Uncommon",
+            "probability": 5,
+            "spritePath": "Fish/Sprites/Salmon"
+        },
+        {
+            "name": "Angelfish",
+            "rarity": "Uncommon",
+            "probability": 6,
+            "spritePath": "Fish/Sprites/Angelfish"
+        },
+        {
+            "name": "Barracuda",
+            "rarity": "Uncommon",
+            "probability": 4,
+            "spritePath": "Fish/Sprites/Barracuda"
+        },
+        {
+            "name": "Swordfish",
+            "rarity": "Rare",
+            "probability": 5,
+            "spritePath": "Fish/Sprites/Swordfish"
+        },
+        {
+            "name": "Bluefin Tuna",
+            "rarity": "Rare",
+            "probability": 3,
+            "spritePath": "Fish/Sprites/BluefinTuna"
+        },
+        {
+            "name": "Golden Fish",
+            "rarity": "Rare",
+            "probability": 2,
+            "spritePath": "Fish/Sprites/GoldenFish"
+        }
+    ]
+}
